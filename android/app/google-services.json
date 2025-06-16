@@ -1,0 +1,98 @@
+{
+  "project_info": {
+    "project_number": "535831779147",
+    "project_id": "money-manage-e2311",
+    "storage_bucket": "money-manage-e2311.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:535831779147:android:f69648efcc8856a57bbace",
+        "android_client_info": {
+          "package_name": "com.example.dhan_mitra"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "535831779147-9160ah4efetaa0cmtvpncju2o3r0n5jq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.dhan_mitra",
+            "certificate_hash": "77c79ed79f1f8b9b8fab93fec4e9161803ae84fb"
+          }
+        },
+        {
+          "client_id": "535831779147-snku99mui9e4s5fnnqn2qj74mr9cnlq0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKo5F6Hmw1fdFP8HO0_mqLegGO3QCjPvw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "535831779147-snku99mui9e4s5fnnqn2qj74mr9cnlq0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "535831779147-adtbbofr8gag6oeclfthvs2sr9cledg1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.dhanMitra"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:535831779147:android:7fef4f900ea8771a7bbace",
+        "android_client_info": {
+          "package_name": "com.example.dhan_mitra_final"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "535831779147-qua1bugushigbb5555bi8emcldpvuar5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.dhan_mitra_final",
+            "certificate_hash": "77c79ed79f1f8b9b8fab93fec4e9161803ae84fb"
+          }
+        },
+        {
+          "client_id": "535831779147-snku99mui9e4s5fnnqn2qj74mr9cnlq0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKo5F6Hmw1fdFP8HO0_mqLegGO3QCjPvw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "535831779147-snku99mui9e4s5fnnqn2qj74mr9cnlq0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "535831779147-adtbbofr8gag6oeclfthvs2sr9cledg1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.dhanMitra"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
