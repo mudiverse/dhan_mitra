@@ -8,7 +8,8 @@ class UserSession {
   String? userId;
 
   void setUserId(String id) {
-    userId = id;
+    // Always store only the first 6 characters as the user ID
+    userId = id.length >= 6 ? id.substring(0, 6) : id;
   }
 
   String get getUserId {

@@ -3,6 +3,7 @@ import 'package:dhan_mitra_final/Widgets/my_text_field.dart';
 import 'package:dhan_mitra_final/Widgets/squaretile.dart';
 import 'package:dhan_mitra_final/services/google_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -18,6 +19,12 @@ class _RegisterPageState extends State<RegisterPage> {
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   bool _isLoading = false;
+  final _firestore = FirebaseFirestore.instance;
+
+  // Helper method to get short user ID
+  String getShortUserId(String uid) {
+    return uid.length >= 6 ? uid.substring(0, 6) : uid;
+  }
 
   @override
   void dispose() {
@@ -53,17 +60,29 @@ class _RegisterPageState extends State<RegisterPage> {
       }
 
       // Attempt to create user
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      final userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
 
-      // Clear inputs on success (optional)
+      // Create user document with short ID
+      if (userCredential.user != null) {
+        final shortUserId = getShortUserId(userCredential.user!.uid);
+        final userDoc = _firestore.collection('users').doc(shortUserId);
+        
+        await userDoc.set({
+          'name': userCredential.user!.displayName ?? 'User_$shortUserId',
+          'email': userCredential.user!.email ?? '',
+          'userid': shortUserId,
+          'createdAt': Timestamp.now(),
+        });
+      }
+
+      // Clear inputs on success
       emailController.clear();
       passwordController.clear();
       confirmPasswordController.clear();
 
-      // Optionally navigate to another screen or show success message
     } on FirebaseAuthException catch (e) {
       String errorMessage;
       switch (e.code) {

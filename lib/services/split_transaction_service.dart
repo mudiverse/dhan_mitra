@@ -12,27 +12,29 @@ class SplitTransactionService {
     required List<String> participants,
     required Map<String, double> splitDetails,
   }) async {
-    final docRef = _firestore.collection(_collection).doc();
-    
-    final transaction = MultiTransactionModel(
-      id: docRef.id,
-      title: title,
-      amount: amount,
-      category: 'split',
-      date: DateTime.now(),
-      paidBy: paidBy,
-      participants: participants,
-      splitDetails: splitDetails,
-      settledUsers: [], // Initialize with empty list
-      groupId: '', // Empty for non-group splits
-      createdAt: DateTime.now(),
-    );
-
     try {
+      final docRef = _firestore.collection(_collection).doc();
+      
+      final transaction = MultiTransactionModel(
+        id: docRef.id,
+        title: title,
+        amount: amount,
+        category: 'split',
+        date: DateTime.now(),
+        paidBy: paidBy,
+        participants: participants,
+        splitDetails: splitDetails,
+        settledUsers: [], // Initialize with empty list
+        groupId: '', // Empty for non-group splits
+        createdAt: DateTime.now(),
+      );
+
       await docRef.set(transaction.toMap());
       return docRef.id;
+    } on FirebaseException catch (e) {
+      throw Exception('Failed to create split transaction: ${e.message}');
     } catch (e) {
-      throw Exception('Failed to create split transaction: $e');
+      throw Exception('Unexpected error while creating split transaction: $e');
     }
   }
 

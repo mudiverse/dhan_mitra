@@ -13,6 +13,7 @@ class AddGroupDialog extends StatefulWidget {
 
 class _AddGroupDialogState extends State<AddGroupDialog> {
   String groupName = '';
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -25,28 +26,48 @@ class _AddGroupDialogState extends State<AddGroupDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: _isLoading ? null : () => Navigator.pop(context),
           child: const Text('Cancel'),
         ),
         ElevatedButton(
-          onPressed: () async {
+          onPressed: _isLoading ? null : () async {
             if (groupName.trim().isNotEmpty) {
-              final group = GroupModel(
-                id: DateTime.now().millisecondsSinceEpoch.toString(),
-                name: groupName.trim(),
-                members: [],
-              );
+              setState(() => _isLoading = true);
+              
               try {
+                final group = GroupModel(
+                  id: DateTime.now().millisecondsSinceEpoch.toString(),
+                  name: groupName.trim(),
+                  members: [],
+                );
+                
                 await context.read<AppState>().addNewGroup(group, creatorUserId: currentUserId);
+                
+                if (!mounted) return;
                 Navigator.pop(context);
               } catch (e) {
+                if (!mounted) return;
+                
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Error creating group: $e')),
+                  SnackBar(
+                    content: Text('Error creating group: ${e.toString()}'),
+                    backgroundColor: Colors.red,
+                  ),
                 );
+              } finally {
+                if (mounted) {
+                  setState(() => _isLoading = false);
+                }
               }
             }
           },
-          child: const Text('Create'),
+          child: _isLoading 
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            : const Text('Create'),
         ),
       ],
     );

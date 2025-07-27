@@ -55,18 +55,37 @@ class _HomePageState extends State<HomePage> {
   //   setState(() => _isLoading = false);
   // }
   Future<void> _initUserAndLoadDashboard() async {
-    await _userService.createUserIfDocumentNotExists();
-    final data = await _userService.getUserData();
+    try {
+      await _userService.createUserIfDocumentNotExists();
+      final data = await _userService.getUserData();
 
-    setState(() {
-      userData = data;
-      _isLoading = false;
-    });
-    UserSession().setUserId(
-        userData?['userid']); //sets the userId globaly access from anywhere
-    // Now load dashboard data (after userData is ready)
-    final dashboardState = Provider.of<DashboardState>(context, listen: false);
-    await dashboardState.loadDashboardData(userData!['userid']);
+      if (!mounted) return;
+
+      setState(() {
+        userData = data;
+        _isLoading = false;
+      });
+
+      if (userData != null) {
+        UserSession().setUserId(userData!['userid']);
+        // Now load dashboard data (after userData is ready)
+        final dashboardState = Provider.of<DashboardState>(context, listen: false);
+        await dashboardState.loadDashboardData(userData!['userid']);
+      }
+    } catch (e) {
+      if (!mounted) return;
+      
+      setState(() {
+        _isLoading = false;
+      });
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error loading user data: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override

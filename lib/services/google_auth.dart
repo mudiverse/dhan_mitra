@@ -1,9 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  // Helper method to get short user ID
+  String getShortUserId(String uid) {
+    return uid.length >= 6 ? uid.substring(0, 6) : uid;
+  }
 
   // Sign in with Google
   Future<UserCredential?> signInWithGoogle() async {
@@ -27,8 +34,26 @@ class AuthService {
         idToken: gAuth.idToken,
       );
 
-      // Step 5: Sign in to Firebase and return the result
-      return await _auth.signInWithCredential(credential);
+      // Step 5: Sign in to Firebase
+      final userCredential = await _auth.signInWithCredential(credential);
+      
+      // Step 6: Create or update user document with short ID
+      if (userCredential.user != null) {
+        final shortUserId = getShortUserId(userCredential.user!.uid);
+        final userDoc = _firestore.collection('users').doc(shortUserId);
+        final docSnapshot = await userDoc.get();
+
+        if (!docSnapshot.exists) {
+          await userDoc.set({
+            'name': userCredential.user!.displayName ?? 'User_$shortUserId',
+            'email': userCredential.user!.email ?? '',
+            'userid': shortUserId,
+            'createdAt': Timestamp.now(),
+          });
+        }
+      }
+
+      return userCredential;
     } catch (e) {
       print('Google Sign-In failed: $e');
       return null;
