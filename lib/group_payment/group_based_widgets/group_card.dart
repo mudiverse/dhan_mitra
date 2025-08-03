@@ -53,6 +53,8 @@ class GroupCard extends StatelessWidget {
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
                         ),
                         const SizedBox(height: 4),
                         Text(

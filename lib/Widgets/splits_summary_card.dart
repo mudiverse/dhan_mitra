@@ -226,6 +226,8 @@ class _SplitSummaryCardState extends State<SplitSummaryCard> {
                               fontSize: 12,
                               color: isUserSettled ? Colors.green : null,
                             ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
                           ),
                           if (isUserSettled)
                             const Icon(Icons.check_circle,
@@ -242,6 +244,8 @@ class _SplitSummaryCardState extends State<SplitSummaryCard> {
                               fontWeight: FontWeight.w500,
                               color: isUserSettled ? Colors.green : null,
                             ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
                           ),
                           if (canToggle)
                             Switch(

@@ -258,7 +258,11 @@ class _SharedSplitDialogState extends State<SharedSplitDialog> {
                 spacing: 8,
                 children: _dialogSplitDetails.entries.map((entry) {
                   return Chip(
-                    label: Text("${entry.key}: ₹${entry.value.toStringAsFixed(2)}"),
+                    label: Text(
+                      "${entry.key}: ₹${entry.value.toStringAsFixed(2)}",
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
                     backgroundColor: Colors.deepPurple.shade100,
                     onDeleted: () {
                       setState(() {

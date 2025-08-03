@@ -14,14 +14,19 @@ class TransactionException implements Exception {
 }
 
 class TransactionService {
-  // Getting the current user
+  // Helper method to get short user ID
+  String getShortUserId(String uid) {
+    return uid.length >= 6 ? uid.substring(0, 6) : uid;
+  }
+
+  // Getting the current user (short ID)
   String get uid {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
         throw TransactionException('User not authenticated');
       }
-      return user.uid;
+      return getShortUserId(user.uid);
     } catch (e) {
       throw TransactionException('Failed to get user ID: ${e.toString()}');
     }

@@ -29,6 +29,11 @@ class _SplitMoneyPageState extends State<SplitMoneyPage> {
   final SplitTransactionService _splitService = SplitTransactionService();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  // Helper method to get short user ID
+  String getShortUserId(String uid) {
+    return uid.length >= 6 ? uid.substring(0, 6) : uid;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -36,8 +41,8 @@ class _SplitMoneyPageState extends State<SplitMoneyPage> {
   }
 
   void _loadSplits() {
-    final userId = _auth.currentUser?.uid;
-    if (userId == null) return;
+    final userId = getShortUserId(_auth.currentUser?.uid ?? '');
+    if (userId.isEmpty) return;
 
     try {
       _splitService.getPendingSplits(userId).listen(
@@ -85,10 +90,10 @@ class _SplitMoneyPageState extends State<SplitMoneyPage> {
   }
 
   void addSplit() async {
-    final currentUserId = _auth.currentUser?.uid;
+    final currentUserId = getShortUserId(_auth.currentUser?.uid ?? '');
     // Collect all participants (current user + splitUsers) that will be initially displayed
     final participants = <String>{};
-    if (currentUserId != null) {
+    if (currentUserId.isNotEmpty) {
       participants.add(currentUserId);
     }
     for (var user in splitUsers.keys) {
@@ -109,8 +114,8 @@ class _SplitMoneyPageState extends State<SplitMoneyPage> {
   }
 
   Future<void> _saveSplitFromDialog(dynamic split) async {
-    final userId = _auth.currentUser?.uid;
-    if (userId == null) {
+    final userId = getShortUserId(_auth.currentUser?.uid ?? '');
+    if (userId.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please sign in to create splits')),
       );
@@ -140,7 +145,7 @@ class _SplitMoneyPageState extends State<SplitMoneyPage> {
   @override
   Widget build(BuildContext context) {
     final dashboardState = Provider.of<DashboardState>(context);
-    final currentUserId = _auth.currentUser?.uid ?? '';
+    final currentUserId = getShortUserId(_auth.currentUser?.uid ?? '');
     final pendingAmt = dashboardState.splitToPay;
     final owedAmt = dashboardState.splitOwed;
     return Scaffold(

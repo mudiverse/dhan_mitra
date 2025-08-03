@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../models/group_payment_models/group_models.dart';
 import '../../providers/app_state.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
 //adds the gruop name 
 class AddGroupDialog extends StatefulWidget {
   const AddGroupDialog({super.key});
@@ -15,9 +16,14 @@ class _AddGroupDialogState extends State<AddGroupDialog> {
   String groupName = '';
   bool _isLoading = false;
 
+  // Helper method to get short user ID
+  String getShortUserId(String uid) {
+    return uid.length >= 6 ? uid.substring(0, 6) : uid;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
+    final currentUserId = getShortUserId(FirebaseAuth.instance.currentUser?.uid ?? '');
     return AlertDialog(
       title: const Text('Create New Group'),
       content: TextField(

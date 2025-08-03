@@ -47,6 +47,8 @@ class SplitCard extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
             ),
             if (isAllSettled)
@@ -56,6 +58,8 @@ class SplitCard extends StatelessWidget {
         subtitle: Text(
           'Paid by ${getDisplayName(split.paidBy)} • ₹${split.totalAmount.toStringAsFixed(2)}',
           style: const TextStyle(fontSize: 13, color: Colors.black54),
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
         ),
         children: [
           const Divider(thickness: 1, indent: 16, endIndent: 16),
@@ -80,6 +84,8 @@ class SplitCard extends StatelessWidget {
                   fontSize: 14,
                   color: isSettled ? Colors.green : null,
                 ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
               trailing: Text(
                 '₹${amount.toStringAsFixed(2)}',
@@ -87,6 +93,8 @@ class SplitCard extends StatelessWidget {
                   color: isPayer ? Colors.green : (isSettled ? Colors.green : Colors.black87),
                   fontWeight: isPayer ? FontWeight.bold : FontWeight.normal,
                 ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
             );
           }),

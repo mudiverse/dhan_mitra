@@ -42,7 +42,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers:[
-        ChangeNotifierProvider(create: (_) => AppState()..loadGroups()),
+        ChangeNotifierProvider(create: (_) => AppState()),
         ChangeNotifierProvider(create: (_) => DashboardState())
       ],
       child: const MyApp(),

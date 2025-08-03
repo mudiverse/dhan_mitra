@@ -77,8 +77,16 @@ class _SplitsPageState extends State<SplitsPage> {
         itemBuilder: (context, index) {
           final expense = expenses[index];
           return ListTile(
-            title: Text(expense['title'] ?? ''),
-            subtitle: Text("Amount: ${expense['amount']}"),
+            title: Text(
+              expense['title'] ?? '',
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+            subtitle: Text(
+              "Amount: ${expense['amount']}",
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
             trailing: IconButton(
               icon: const Icon(Icons.delete, color: Colors.red),
               onPressed: () => _removeExpense(index),

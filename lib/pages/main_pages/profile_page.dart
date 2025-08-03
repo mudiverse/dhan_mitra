@@ -134,7 +134,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       const SizedBox(height: 16),
                       _buildInfoCard(
                         'User ID',
-                        userData?['userid']?.substring(0, 5) ?? 'abc12345',
+                        userData?['userid']?.substring(0, 6) ?? 'abc12345',
                         Icons.fingerprint,
                         currentTheme,
                         isSelectable: true,
@@ -291,6 +291,8 @@ class _ProfilePageState extends State<ProfilePage> {
                           fontWeight: FontWeight.w600,
                           color: theme.colorScheme.onSurface,
                         ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
                       ),
               ],
             ),

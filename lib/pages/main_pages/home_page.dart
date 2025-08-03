@@ -4,6 +4,7 @@ import 'package:dhan_mitra_final/Widgets/money_summaryCard.dart';
 import 'package:dhan_mitra_final/data/repositories/userid_fetch.dart';
 import 'package:dhan_mitra_final/pages/main_pages/profile_page.dart';
 import 'package:dhan_mitra_final/providers/dashboard_state.dart';
+import 'package:dhan_mitra_final/providers/app_state.dart';
 import 'package:dhan_mitra_final/services/user_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -68,9 +69,12 @@ class _HomePageState extends State<HomePage> {
 
       if (userData != null) {
         UserSession().setUserId(userData!['userid']);
-        // Now load dashboard data (after userData is ready)
+        // Now load dashboard data and user-specific groups and transactions (after userData is ready)
         final dashboardState = Provider.of<DashboardState>(context, listen: false);
+        final appState = Provider.of<AppState>(context, listen: false);
         await dashboardState.loadDashboardData(userData!['userid']);
+        await appState.loadUserGroups(userData!['userid']);
+        await appState.loadUserTransactions(userData!['userid']);
       }
     } catch (e) {
       if (!mounted) return;
@@ -143,26 +147,28 @@ class _HomePageState extends State<HomePage> {
                         children: [
                           Container(
                             padding: const EdgeInsets.symmetric(vertical: 8),
-                            child: Row(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Welcome, ',
+                                  'Welcome',
                                   style: TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
                                     color: Colors.orange[700],
                                   ),
                                 ),
-                                Expanded(
-                                  child: Text(
-                                    userData?['name'] ?? 'User',
-                                    style: TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.purple[700],
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
+                                const SizedBox(height: 4),
+                                Text(
+                                  userData?['name'] ?? 'User',
+                                  style: TextStyle(
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.purple[700],
                                   ),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 2,
+                                  softWrap: true,
                                 ),
                               ],
                             ),

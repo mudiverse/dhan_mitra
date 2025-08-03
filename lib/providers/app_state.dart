@@ -10,17 +10,31 @@ class AppState extends ChangeNotifier {
 
   List<GroupModel> groups = [];
   List<MultiTransactionModel> transactions = [];
+  String? currentUserId;
 
+  // DEPRECATED: Use loadUserGroups() instead for proper access control
   Future<void> loadGroups() async {
-    final snapshot = await _firestore.collection('groups').get();
-    groups = snapshot.docs.map((doc) => GroupModel.fromMap(doc.data())).toList();
-    notifyListeners();
+    throw UnsupportedError('Use loadUserGroups() instead for proper access control');
   }
 
+  // DEPRECATED: Use loadUserTransactions() instead for proper access control
   Future<void> loadTransactions() async {
-    final snapshot = await _firestore.collection('transactions').get();
-    transactions = snapshot.docs.map((doc) => MultiTransactionModel.fromMap(doc.data())).toList();
-    notifyListeners();
+    throw UnsupportedError('Use loadUserTransactions() instead for proper access control');
+  }
+
+  // Load only transactions where the user is a participant
+  Future<void> loadUserTransactions(String userId) async {
+    try {
+      final snapshot = await _firestore.collection('transactions')
+          .where('participants', arrayContains: userId)
+          .get();
+      transactions = snapshot.docs.map((doc) => MultiTransactionModel.fromMap(doc.data())).toList();
+      currentUserId = userId;
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error loading user transactions: $e');
+      rethrow;
+    }
   }
 
   Future<void> addTransactionAndUpdateGroup(MultiTransactionModel txn) async {
@@ -55,6 +69,11 @@ class AppState extends ChangeNotifier {
   }
 
   List<MultiTransactionModel> getTransactionsByGroup(String groupId) {
+    // Only return transactions if user is a member of the group
+    final group = getGroupById(groupId);
+    if (group == null || currentUserId == null || !group.members.contains(currentUserId)) {
+      return [];
+    }
     return transactions.where((txn) => txn.groupId == groupId).toList();
   }
 
@@ -69,6 +88,7 @@ class AppState extends ChangeNotifier {
         .where('members', arrayContains: userId)
         .get();
       groups = snapshot.docs.map((doc) => GroupModel.fromMap(doc.data())).toList();
+      currentUserId = userId;
       notifyListeners();
     } catch (e) {
       debugPrint('Error loading user groups: $e');

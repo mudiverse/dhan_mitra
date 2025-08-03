@@ -22,6 +22,11 @@ class _GroupPageState extends State<GroupPage> {
   List<SplitPaymentModel> splits = [];
   final SplitTransactionService _splitService = SplitTransactionService();
 
+  // Helper method to get short user ID
+  String getShortUserId(String uid) {
+    return uid.length >= 6 ? uid.substring(0, 6) : uid;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -29,10 +34,7 @@ class _GroupPageState extends State<GroupPage> {
   }
 
   Future<void> _loadSplits() async {
-    // Load transactions from Firebase
-    await context.read<AppState>().loadTransactions();
-    
-    // Get transactions for this group
+    // Get transactions for this group (already filtered by user access)
     final transactions = context.read<AppState>().getTransactionsByGroup(widget.group.id);
     
     // Convert MultiTransactionModel to SplitPaymentModel
@@ -48,7 +50,7 @@ class _GroupPageState extends State<GroupPage> {
 
   void _addUserDialog() {
     String userId = '';
-    final currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
+    final currentUserId = getShortUserId(FirebaseAuth.instance.currentUser?.uid ?? '');
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -76,7 +78,8 @@ class _GroupPageState extends State<GroupPage> {
                   transactionIds: widget.group.transactionIds,
                 );
                 await context.read<AppState>().addNewGroup(updatedGroup, creatorUserId: currentUserId);
-                await context.read<AppState>().loadGroups();
+                // Reload user groups to reflect the changes
+                await context.read<AppState>().loadUserGroups(currentUserId);
                 setState(() {
                   widget.group.members.add(userId);
                 });
@@ -129,8 +132,26 @@ class _GroupPageState extends State<GroupPage> {
 
   @override
   Widget build(BuildContext context) {
-    final group = context.watch<AppState>().getGroupById(widget.group.id)!;
+    final currentUserId = getShortUserId(FirebaseAuth.instance.currentUser?.uid ?? '');
+    final group = context.watch<AppState>().getGroupById(widget.group.id);
     final theme = Theme.of(context);
+    
+    // Check if user is a member of this group
+    if (group == null || !group.members.contains(currentUserId)) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Access Denied'),
+          centerTitle: true,
+        ),
+        body: const Center(
+          child: Text(
+            'You are not a member of this group.',
+            style: TextStyle(fontSize: 18),
+          ),
+        ),
+      );
+    }
+    
     final transactions = context.watch<AppState>().getTransactionsByGroup(widget.group.id);
 
     return Scaffold(
@@ -207,6 +228,8 @@ class _GroupPageState extends State<GroupPage> {
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: theme.colorScheme.onPrimaryContainer,
                             ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
                           ),
                         ],
                       ),
@@ -265,8 +288,8 @@ class _GroupPageState extends State<GroupPage> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
-          final currentUserId = FirebaseAuth.instance.currentUser?.uid;
-          final participants = <String>{if (currentUserId != null) currentUserId, ...group.members}.toList();
+          final currentUserId = getShortUserId(FirebaseAuth.instance.currentUser?.uid ?? '');
+          final participants = <String>{if (currentUserId.isNotEmpty) currentUserId, ...group.members}.toList();
           final split = await showDialog(
             context: context,
             builder: (_) => SharedSplitDialog(
